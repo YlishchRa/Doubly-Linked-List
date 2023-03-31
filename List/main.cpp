@@ -14,7 +14,7 @@ int main()
     l.push_back(3);
     l.push_back(4);
     l.push_back(5);
-    l.insert(7, 6);
+    l.insert(4, 10);
     for (int i = 0; i < l.getSize(); i++)
     {
         cout << l[i] << endl;

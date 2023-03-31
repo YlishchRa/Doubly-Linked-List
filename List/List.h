@@ -19,14 +19,16 @@ private:
     int size;
     Node<T>* head;
     Node<T>* tail;
+    void createNode(Node<T>* node, const T& _data);
 
 public:
     List();
-    void push_back(T _data);
-    void push_front(T _data);
+    void push_back(const T& _data);
+    void push_front(const T& _data);
     void pop_back();
     void pop_front();
-    void insert(int place, T _data);
+    void insert(const int& place, const T& _data);
+
     bool empty();
     T& operator[](int index);
     int getSize() { return size; }
@@ -35,12 +37,21 @@ public:
 };
 
 template <typename T>
+inline void List<T>::createNode(Node<T>* node, const T& _data)
+{
+    Node<T>* savedNode = node->ptrNext;
+    node->ptrNext = new Node<T>(_data, node->ptrNext, node);
+    savedNode->ptrPriv = node->ptrNext;
+    size++;
+}
+
+template <typename T>
 List<T>::List() : head{nullptr}, tail{nullptr}, size{0}
 {
 }
 
 template <typename T>
-void List<T>::push_back(T _data)
+void List<T>::push_back(const T& _data)
 {
     if (size == 0)
     {
@@ -56,7 +67,7 @@ void List<T>::push_back(T _data)
 }
 
 template <typename T>
-inline void List<T>::push_front(T _data)
+inline void List<T>::push_front(const T& _data)
 {
     if (size == 0)
     {
@@ -112,14 +123,14 @@ void List<T>::pop_front()
     size--;
 }
 template <typename T>
-inline void List<T>::insert(int place, T _data)
+inline void List<T>::insert(const int& place, const T& _data)
 {
-    if (place == 1)
+    if (place == 0)
     {
         push_front(_data);
         return;
     }
-    if (place > size)
+    if (place >= size)
     {
         push_back(_data);
         return;
@@ -132,30 +143,24 @@ inline void List<T>::insert(int place, T _data)
         {
             if (i == place)
             {
-                Node<T>* savedNode = currentNode->ptrPriv;
-                currentNode->ptrPriv = new Node<T>(_data, currentNode, currentNode->ptrPriv);
-                savedNode->ptrNext = currentNode->ptrPriv;
-                size++;
+                createNode(currentNode, _data);
                 return;
             }
             currentNode = currentNode->ptrPriv;
         }
     }
-    else if (place < size / 2)
+    //
+    // else if (place < size / 2) means that we have to start from head
+    // 
+    currentNode = head;
+    for (size_t i = 1; i < size; i++)
     {
-        currentNode = head;
-        for (size_t i = 1; i < size; i++)
+        if (i == place)
         {
-            if (i == place)
-            {
-                Node<T>* savedNode = currentNode->ptrPriv;
-                currentNode->ptrPriv = new Node<T>(_data, currentNode, currentNode->ptrPriv);
-                savedNode->ptrNext = currentNode->ptrPriv;
-                size++;
-                return;
-            }
-            currentNode = currentNode->ptrNext;
+            createNode(currentNode, _data);
+            return;
         }
+        currentNode = currentNode->ptrNext;
     }
 }
 template <typename T>
