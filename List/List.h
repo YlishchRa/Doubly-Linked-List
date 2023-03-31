@@ -20,6 +20,7 @@ private:
     Node<T>* head;
     Node<T>* tail;
     void createNode(Node<T>* node, const T& _data);
+    void nodeDelete(Node<T>* node);
 
 public:
     List();
@@ -28,7 +29,7 @@ public:
     void pop_back();
     void pop_front();
     void insert(const int& place, const T& _data);
-
+    void erase(const int& place);
     bool empty();
     T& operator[](int index);
     int getSize() { return size; }
@@ -43,6 +44,16 @@ inline void List<T>::createNode(Node<T>* node, const T& _data)
     node->ptrNext = new Node<T>(_data, node->ptrNext, node);
     savedNode->ptrPriv = node->ptrNext;
     size++;
+}
+
+template <typename T>
+inline void List<T>::nodeDelete(Node<T>* node)
+{
+    Node<T>* saveNode = node->ptrNext->ptrNext;
+    delete node->ptrNext;
+    node->ptrNext = saveNode;
+    saveNode->ptrPriv = node;
+    size--;
 }
 
 template <typename T>
@@ -87,9 +98,8 @@ void List<T>::pop_back()
 {
     if (empty())
         return;
-    // if head is equal to nullptr, it means that this is the end of the list and size = 0
-    // so just return method
-    // All commited
+    
+    // if head == tail then list has one Node so just delete it
     if (head == tail)
     {
         delete head;
@@ -122,10 +132,11 @@ void List<T>::pop_front()
     }
     size--;
 }
+
 template <typename T>
 inline void List<T>::insert(const int& place, const T& _data)
 {
-    if (place == 0)
+    if (place <= 0)
     {
         push_front(_data);
         return;
@@ -151,7 +162,7 @@ inline void List<T>::insert(const int& place, const T& _data)
     }
     //
     // else if (place < size / 2) means that we have to start from head
-    // 
+    //
     currentNode = head;
     for (size_t i = 1; i < size; i++)
     {
@@ -163,6 +174,65 @@ inline void List<T>::insert(const int& place, const T& _data)
         currentNode = currentNode->ptrNext;
     }
 }
+
+template <typename T>
+inline void List<T>::erase(const int& place)
+{
+    if (size == 0)
+    {
+        return;
+    }
+    if (size == 2)
+    {
+        if (place == 0)
+        {
+            pop_front();
+            return;
+        }
+        pop_back();
+        return;
+    }
+    if (place <= 0)
+    {
+        pop_front();
+        return;
+    }
+    if (place >= size)
+    {
+        pop_back();
+        return;
+    }
+
+
+    Node<T>* currentNode;
+    if (place >= size / 2)
+    {
+        currentNode = tail;
+        for (size_t i = size; i > 0; i--)
+        {
+            if (i == place)
+            {
+                nodeDelete(currentNode);
+                return;
+            }
+            currentNode = currentNode->ptrPriv;
+        }
+    }
+    //
+    // else if (place < size / 2) means that we have to start from head
+    //
+    currentNode = head;
+    for (size_t i = 1; i < size; i++)
+    {
+        if (i == place)
+        {
+            nodeDelete(currentNode);
+            return;
+        }
+        currentNode = currentNode->ptrNext;
+    }
+}
+
 template <typename T>
 inline bool List<T>::empty()
 {

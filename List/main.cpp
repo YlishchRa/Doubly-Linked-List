@@ -11,10 +11,11 @@ int main()
     
     l.push_back(1);
     l.push_back(2);
-    l.push_back(3);
-    l.push_back(4);
-    l.push_back(5);
-    l.insert(4, 10);
+   
+    l.pop_front();
+    l.push_front(3);
+    l.erase(1);
+
     for (int i = 0; i < l.getSize(); i++)
     {
         cout << l[i] << endl;
